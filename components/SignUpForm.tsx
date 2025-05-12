@@ -292,8 +292,8 @@ export default function SignUpForm() {
             <div className="flex items-start gap-2">
               <CheckCircle className="h-5 w-5 text-primary mt-0.5" />
               <p className="text-sm text-default-600">
-                By signing up, you agree to our Terms of Service and Privacy
-                Policy
+                By signing up, you agree to our <Link className="font-semibold text-blue-500 hover:underline" href="/terms">Terms of Service</Link> and <Link className="font-semibold text-blue-500 hover:underline" href="/privacy">Privacy Policy</Link>
+                
               </p>
             </div>
           </div>

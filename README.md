@@ -1,5 +1,21 @@
 # 📁 Droply
 
+[![Next.js](https://img.shields.io/badge/Next.js-14.0-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-blue?style=for-the-badge&logo=postgresql)](https://neon.tech)
+[![Clerk](https://img.shields.io/badge/Auth-Clerk-purple?style=for-the-badge&logo=clerk)](https://clerk.dev/)
+[![ImageKit](https://img.shields.io/badge/Storage-ImageKit-blue?style=for-the-badge&logo=imagekit)](https://imagekit.io/)
+[![Redis](https://img.shields.io/badge/Cache-Redis-red?style=for-the-badge&logo=redis)](https://redis.com/)
+[![Drizzle](https://img.shields.io/badge/ORM-Drizzle-orange?style=for-the-badge&logo=drizzle)](https://orm.drizzle.team/)
+[![TailwindCSS](https://img.shields.io/badge/CSS-Tailwind-38bdf8?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+[![Contributions Welcome](https://img.shields.io/badge/Contributions-Welcome-brightgreen.svg?style=for-the-badge)](CONTRIBUTING.md)
+![Release Date](https://img.shields.io/badge/Release%20Date-May%202025-blue?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-production-yellow?style=for-the-badge)
+[![Hugging Face](https://img.shields.io/badge/HuggingFace-Model-yellow)](https://huggingface.co/Sakshamgoel107/your-model)
+[![Gemini](https://img.shields.io/badge/Google-Gemini-blue)](https://gemini.google.com/)
+![Droply](public/logo.jpg)
+
 A modern, secure, and user-friendly file storage application that allows you to manage your files in the cloud with ease. Built with cutting-edge technologies for optimal performance and security.
 
 ## ✨ Key Features
@@ -27,6 +43,7 @@ A modern, secure, and user-friendly file storage application that allows you to 
   - Dark/Light mode support
   - Drag-and-drop file uploads
   - Real-time upload progress
+  - Ai image Generation
 
 ## 🛠️ Tech Stack
 
@@ -91,6 +108,17 @@ A modern, secure, and user-friendly file storage application that allows you to 
 
    # Database - Neon PostgreSQL
    DATABASE_URL=your_neon_database_url
+   
+   # Gemini api Keys
+   GEMINI_API_KEY=your_gemini_api
+
+   # Hugging Face API Key for Image Generation
+   HUGGINGFACE_API_KEY=your_huggingface_api_key
+
+   # Redis Setup
+   REDIS_URL=your_redis_url
+   REDIS_USERNAME=your_redis_username
+   REDIS_PASSWORD=your_redis_passowrd
    ```
 
 4. Set up your accounts and get the required API keys:

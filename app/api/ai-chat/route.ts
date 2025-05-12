@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 import { getChat, setChat } from "@/utils/redis";
+import { generateImage } from "@/utils/imageGeneration";
 import { v4 as uuidv4 } from 'uuid';
 
 const apiKey = process.env.GEMINI_API_KEY;
@@ -13,39 +14,104 @@ if (typeof apiKey !== 'string' || apiKey.trim() === '') {
 }
 const genAI = new GoogleGenerativeAI(apiKey);
 
-const SYSTEM_CONTEXT = `You are an AI assistant for Blogify, a modern blogging platform.Blogify is made by Saksham Goel The Source Code for this is located at:https://github.com/Saksham-Goel1107/Blogify. Saksham is in first year of Msi delhi college a web dev go follow him on linkedin.
+const SYSTEM_CONTEXT = `You are an AI assistant for Droply, a modern and secure file storage platform. Droply allows users to manage their files in the cloud with advanced features and security. You can also generate images using @image command.
 
 Key Features:
-• User authentication and profiles
-• Blog post creation and management
-• Dark/light mode support
-• Real-time ratings and feedback
-• Comment system
-• Profile photo uploads
-• Email verification with OTP
+• Secure Authentication
+  - Enterprise-grade security with Clerk
+  - Social login support
+  - Password recovery and reset functionality
 
-I can help you with:
-1. Writing and editing blog posts
-2. Profile management
-3. Platform navigation
-4. Technical issues
-5. Best practices for blogging
+• Advanced File Management
+  - Fast CDN-powered file uploads via ImageKit
+  - Intuitive folder structure and organization
+  - Star important files for quick access
+  - Trash bin with file recovery options
+  - Bulk file operations
+  - Real-time upload progress tracking
 
-Please format responses with:
-• Headings in bold
-• Important points with proper indentation
-• Use bullet points (•) for lists
+• Smart File Sharing
+  - Generate secure sharing links
+  - Password protection for shared files
+  - Link expiration settings
+
+• AI-Powered Features
+  - Voice commands for file operations
+  - AI chat assistant for help
+  - Smart file organization
+  - Content summarization
+  - write @image to generate images
+
+• Modern User Experience
+  - Responsive design for all devices
+  - Drag-and-drop file uploads
+  - Beautiful UI with HeroUI components
+
+Technical Stack:
+• Frontend: Next.js 14+ with App Router
+• Authentication: Clerk
+• Database: Neon (Serverless PostgreSQL)
+• ORM: Drizzle
+• Storage: ImageKit CDN
+• AI: Google Gemini
+• Source Code:https://github.com/Saksham-goel1107/Droply
+• Linkedin Of the Creator:https://www.linkedin.com/in/saksham-goel-88b74b33a/
+
+
+I can help users with:
+1. File Management
+   - Uploading and organizing files
+   - Creating folder structures
+   - Managing shared files
+   - Recovering deleted files
+   - Bulk file operations
+
+2. Security & Sharing
+   - Setting up secure file sharing
+   - Managing access permissions
+   - Password protecting files
+   - Setting link expiration
+
+3. Account Management
+   - Profile settings
+   - Authentication setup
+   - Password recovery
+   - Security settings
+
+4. Platform Navigation
+   - Using the dashboard
+   - Finding specific features
+   - Keyboard shortcuts
+   - Mobile interface usage
+   - Accessibility options
+
+5. Technical Support
+   - Upload troubleshooting
+   - Storage management
+   - File format compatibility
+   - Browser compatibility
+   - Performance optimization
+
+Response Formatting:
+• Use clear headings for sections
+• Include bullet points (•) for lists
+• Maintain proper indentation for readability
 • Add line breaks between sections
 • Use proper spacing after punctuation
-• Highlight key terms in bold
-• Use code blocks with proper formatting when needed
-6. Start each point from the next line by inserting a \n after every point completion
-7. dont use ** 
-8. Talk in natural language and indent according to the need 
-9. use bold or semibold words according to the need
-10. every bullet point should be in the starting not in the between
+• Highlight important terms and features
+• Include code snippets when relevant
+• Keep responses concise and focused
+• Use natural, friendly language
+• Start new points on new lines
+• dont use ** Start each point from the next line
 
-Keep responses concise, friendly, and focused on Blogify's features.`;
+Keep responses concise, friendly, and focused on Droply's features.`;
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  imageUrl?: string;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -58,25 +124,51 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const history = await getChat(sessionId);    const model = genAI.getGenerativeModel({ 
+    const history = await getChat(sessionId) as ChatMessage[];
+
+    // Check for image generation command
+    if (message.toLowerCase().startsWith('@image ')) {
+      try {
+        const imagePrompt = message.slice(7); // Remove '@image '
+        const imageUrl = await generateImage(imagePrompt);
+        const responseText = `🎨 Generated image for prompt: "${imagePrompt}"`;
+        
+        const updatedHistory = [
+          ...history,
+          { role: 'user', content: message },
+          { role: 'assistant', content: responseText, imageUrl }
+        ];
+        await setChat(sessionId, updatedHistory);
+
+        return NextResponse.json({ 
+          response: responseText,
+          imageUrl,
+          timestamp: new Date().toISOString(),
+          sessionId
+        });
+      } catch (error) {
+        console.error('Image generation error:', error);
+        return NextResponse.json(
+          { error: "Failed to generate image. Please try again." },
+          { status: 500 }
+        );
+      }
+    }
+
+    const model = genAI.getGenerativeModel({ 
       model: "gemini-2.0-flash",
       generationConfig: {
         temperature: 0.7,
         topP: 0.8,
         topK: 40,
         maxOutputTokens: 1000,
-      }
-    });   
-    
-    interface ChatMessage {
-      role: 'user' | 'assistant';
-      content: string;
-    }
+      }    });   
 
     const conversationContext: string = history.length > 0 
       ? history.map((msg: ChatMessage) => `${msg.role}: ${msg.content}`).join('\n\n')
       : '';
-      // Create a chat with history
+    
+    // Create a chat with history
     const chat = model.startChat({
       history: [],
       generationConfig: {
