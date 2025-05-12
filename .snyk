@@ -1,0 +1,8 @@
+version: v1.27.0
+ignore:
+  SNYK-JS-LODASH-567746:
+    - reason: Lodash is used in dev-only scripts
+      expires: 2025-12-31T23:59:59Z
+  SNYK-JS-XMLDOM-2436756:
+    - reason: Known false positive; no user input reaches this library
+      expires: 2025-07-01T00:00:00Z
